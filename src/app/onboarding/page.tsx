@@ -22,21 +22,19 @@ export default function OnboardingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      // Assuming you have the user's ID after signup
       const userId = 'user_id_here'
       const userRef = doc(firestore, 'users', userId)
 
-      // Update the user's display name and bio in Firestore
       await setDoc(userRef, {
         displayName: displayName,
         bio: bio,
       }, { merge: true })
 
-      // Optionally, redirect to the dashboard or another page
+      
       router.push('/dashboard')
     } catch (error) {
       console.error("Error updating profile:", error)
-      // Optionally, display an error message to the user
+    
     }
   }
 

@@ -30,7 +30,6 @@ export function DashboardNav() {
   const { logout, user } = useAuth()
 
   const handleSignOut = async () => {
-    // Implement sign out logic here
     await logout()
   }
 

@@ -42,7 +42,7 @@ export default function ProfilePage() {
     
     try {
       await deleteUserAccount()
-      router.push('/') // Redirect to home page after successful deletion
+      router.push('/')
     } catch (error) {
       console.error('Error deleting account:', error);
       alert('Failed to delete account. Please try again.');

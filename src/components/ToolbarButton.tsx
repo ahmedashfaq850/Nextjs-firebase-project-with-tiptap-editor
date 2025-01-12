@@ -12,7 +12,7 @@ type ToolbarButtonProps = {
 const ToolbarButton: FC<ToolbarButtonProps> = ({
   isActive = false,
   disabled = false,
-  onClick = () => {}, // Default empty function
+  onClick = () => {}, 
   children,
   title = "",
 }) => (

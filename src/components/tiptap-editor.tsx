@@ -142,8 +142,6 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
   }, [editor, findText, replaceText])
 
 
-  
-
   const generateAIContent = useCallback(async () => {
     if (!aiPrompt || !editor) return
 

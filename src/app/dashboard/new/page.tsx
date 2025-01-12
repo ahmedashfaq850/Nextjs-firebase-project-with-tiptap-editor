@@ -13,8 +13,6 @@ export default function NewBlogPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle blog submission here
-    console.log({ title, content })
   }
 
   return (
