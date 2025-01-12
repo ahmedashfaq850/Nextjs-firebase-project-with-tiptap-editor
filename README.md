@@ -1,6 +1,12 @@
-# Modern BLog Editor Platform with AI Integration
+# Modern BLog Editor Platform using Next js and Firebase with AI Integration
 
 A comprehensive SaaS platform built with Next.js, TypeScript, and AI capabilities.
+
+
+
+https://github.com/user-attachments/assets/3ae88be5-0302-4d70-99a1-58dbb61eb5a7
+
+
 
 ## 🚀 Key Features
 
