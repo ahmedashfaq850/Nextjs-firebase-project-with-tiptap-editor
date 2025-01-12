@@ -1,15 +1,47 @@
-middleware setup
-prettier setup
-firebase for authentication and data storage
-taptic editor
-shadecn Library
-Modern SaaS landing page 
-Secured Authentication Flow with Protected routes
-Production grade FOlder Structure
-Google Gemini AI Integration for AI Stuff
-Next js backend API Route for making Gemini AI Request
-Typescript with full safety
-Reusable Component
-Context API for Global State management and Auth
-lucide-react library for Rice Icons experience
-Zod validation with react hook using ShadeCn form library
+# Modern BLog Editor Platform with AI Integration
+
+A comprehensive SaaS platform built with Next.js, TypeScript, and AI capabilities.
+
+## 🚀 Key Features
+
+### 💻 Core Technology Stack
+- **Next.js** with TypeScript integration
+- **Firebase** for authentication and data storage
+- **Context API** for global state management
+- **ShadcN UI** components library
+- **Production-grade** folder structure
+
+### 🔐 Authentication & Security
+- Secure authentication flow
+- Protected routes implementation
+- Profile update functionality
+- Personalized onboarding experience
+
+### ✍️ Content Creation Tools
+- **TipTap Rich Text Editor** featuring:
+  - 10+ toolbox functionalities
+  - Word and character count
+  - Image upload capability
+  - Code preview
+  - Taptic feedback
+
+### 🤖 AI Integration
+- Google Gemini AI integration
+- AI-powered blog content generation
+- Custom Next.js API routes for Gemini AI requests
+
+### 🛠️ Development Features
+- **Form Handling**
+  - Zod validation
+  - React Hook Form integration
+  - ShadcN form library
+- **UI/UX**
+  - Modern SaaS landing page
+  - Lucide React icons
+  - Prettier code formatting
+- Reusable component architecture
+
+## 🔧 Technical Setup
+- Middleware configuration
+- TypeScript with full type safety
+- Comprehensive folder structure

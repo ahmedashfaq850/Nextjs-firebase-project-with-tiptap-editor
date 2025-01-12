@@ -1,27 +1,23 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { Edit3 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+export default function OnboardingPage() {
+  const [displayName, setDisplayName] = useState('')
+  const [bio, setBio] = useState('')
   const router = useRouter()
-
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     router.push('/dashboard')
-   
   }
-
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black">
@@ -37,49 +33,40 @@ export default function LoginPage() {
               DocEditor
             </span>
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Welcome back</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Complete your profile</h1>
           <p className="text-zinc-400">
-            Enter your credentials to sign in
+            Tell us a little bit about yourself
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-zinc-300">Email</Label>
+            <Label htmlFor="displayName" className="text-zinc-300">Display Name</Label>
             <Input
-              id="email"
-              placeholder="m@example.com"
+              id="displayName"
+              placeholder="John Doe"
               required
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
               className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500/20"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-zinc-300">Password</Label>
-            <Input
-              id="password"
-              required
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500/20"
+            <Label htmlFor="bio" className="text-zinc-300">Bio</Label>
+            <Textarea
+              id="bio"
+              placeholder="Tell us about yourself..."
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500/20 min-h-[100px]"
             />
           </div>
           <Button 
             className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white border-0 py-2 px-4 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105"
             type="submit"
-            disabled={false}
           >
-            {'Sign In'}
+            Complete Profile
           </Button>
         </form>
-        <div className="text-center text-sm text-zinc-400">
-          Don&apos;t have an account?{' '}
-          <Link className="text-violet-400 hover:text-violet-300 transition-colors" href="/signup">
-            Sign up
-          </Link>
-        </div>
       </div>
     </div>
   )

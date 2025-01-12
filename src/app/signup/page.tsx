@@ -1,39 +1,27 @@
 'use client'
 
 import { useState } from 'react'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { auth, db } from '@/lib/firebase'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Edit3 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
 
 export default function SignUpPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const router = useRouter()
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password)
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        email: user.email,
-        displayName: null,
-        bio: '',
-      })
-      router.push('/onboarding')
-    } catch (error) {
-      setError((error as Error).message)
-    }
+    router.push('/onboarding')
+
   }
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black">
@@ -55,11 +43,7 @@ export default function SignUpPage() {
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <Alert variant="destructive" className="bg-red-500/10 border-red-500/50 text-red-300">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+      
           <div className="space-y-2">
             <Label htmlFor="email" className="text-zinc-300">Email</Label>
             <Input
@@ -86,8 +70,9 @@ export default function SignUpPage() {
           <Button 
             className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white border-0 py-2 px-4 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105"
             type="submit"
+            disabled={false}
           >
-            Sign Up
+            { 'Sign Up'}
           </Button>
         </form>
         <div className="text-center text-sm text-zinc-400">
