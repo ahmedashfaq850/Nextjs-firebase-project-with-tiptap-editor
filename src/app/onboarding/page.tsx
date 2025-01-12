@@ -8,6 +8,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Edit3 } from 'lucide-react'
+import { doc, setDoc } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
+
+// Initialize Firestore
+const firestore = getFirestore()
 
 export default function OnboardingPage() {
   const [displayName, setDisplayName] = useState('')
@@ -16,7 +21,23 @@ export default function OnboardingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    router.push('/dashboard')
+    try {
+      // Assuming you have the user's ID after signup
+      const userId = 'user_id_here'
+      const userRef = doc(firestore, 'users', userId)
+
+      // Update the user's display name and bio in Firestore
+      await setDoc(userRef, {
+        displayName: displayName,
+        bio: bio,
+      }, { merge: true })
+
+      // Optionally, redirect to the dashboard or another page
+      router.push('/dashboard')
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      // Optionally, display an error message to the user
+    }
   }
 
   return (
@@ -55,6 +76,7 @@ export default function OnboardingPage() {
             <Textarea
               id="bio"
               placeholder="Tell us about yourself..."
+              required
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               className="bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-violet-500 focus:ring-violet-500/20 min-h-[100px]"

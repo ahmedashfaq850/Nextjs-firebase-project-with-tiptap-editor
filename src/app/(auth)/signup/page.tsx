@@ -7,19 +7,25 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Edit3 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 
-export default function LoginPage() {
+
+export default function SignUpPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const router = useRouter()
-
 
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    router.push('/dashboard')
-   
+    const auth = getAuth()
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        router.push('/onboarding');
+    } catch (error) {
+        console.error("Error creating user:", error);
+    }
   }
 
 
@@ -37,12 +43,13 @@ export default function LoginPage() {
               DocEditor
             </span>
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Welcome back</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Create an account</h1>
           <p className="text-zinc-400">
-            Enter your credentials to sign in
+            Enter your details to get started
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
+      
           <div className="space-y-2">
             <Label htmlFor="email" className="text-zinc-300">Email</Label>
             <Input
@@ -71,13 +78,13 @@ export default function LoginPage() {
             type="submit"
             disabled={false}
           >
-            {'Sign In'}
+            { 'Sign Up'}
           </Button>
         </form>
         <div className="text-center text-sm text-zinc-400">
-          Don&apos;t have an account?{' '}
-          <Link className="text-violet-400 hover:text-violet-300 transition-colors" href="/signup">
-            Sign up
+          Already have an account?{' '}
+          <Link className="text-violet-400 hover:text-violet-300 transition-colors" href="/login">
+            Sign in
           </Link>
         </div>
       </div>

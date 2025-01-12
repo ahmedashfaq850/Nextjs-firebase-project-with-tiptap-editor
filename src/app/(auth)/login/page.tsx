@@ -1,30 +1,37 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { Edit3 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Edit3 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
 
-
-export default function SignUpPage() {
-  const router = useRouter()
+export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const { login } = useAuth()
+  const router = useRouter()
 
 
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    router.push('/onboarding')
-
+    try {
+      setError('')
+      await login(email, password)
+      
+      router.push('/dashboard')
+    } catch (err) {
+      setError('Failed to login: ' + err)
+    }
   }
 
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-black">
+   
+      <div className="flex min-h-screen items-center justify-center bg-black">
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 via-transparent to-indigo-500/20 opacity-50" />
       <div className="relative mx-auto max-w-md w-full space-y-8 p-8 bg-zinc-900/50 backdrop-blur-xl rounded-xl border border-white/10">
         <div className="text-center">
@@ -37,13 +44,12 @@ export default function SignUpPage() {
               DocEditor
             </span>
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Create an account</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Welcome back</h1>
           <p className="text-zinc-400">
-            Enter your details to get started
+            Enter your credentials to sign in
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
-      
           <div className="space-y-2">
             <Label htmlFor="email" className="text-zinc-300">Email</Label>
             <Input
@@ -72,15 +78,16 @@ export default function SignUpPage() {
             type="submit"
             disabled={false}
           >
-            { 'Sign Up'}
+            {'Sign In'}
           </Button>
         </form>
         <div className="text-center text-sm text-zinc-400">
-          Already have an account?{' '}
-          <Link className="text-violet-400 hover:text-violet-300 transition-colors" href="/login">
-            Sign in
+          Don&apos;t have an account?{' '}
+          <Link className="text-violet-400 hover:text-violet-300 transition-colors" href="/signup">
+            Sign up
           </Link>
         </div>
+        {error && <div className="error">{error}</div>}
       </div>
     </div>
   )

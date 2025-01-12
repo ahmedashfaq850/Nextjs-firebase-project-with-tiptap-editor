@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { LayoutDashboard, FileEdit, User, LogOut, Edit3 } from 'lucide-react'
-
+import { useAuth } from '@/contexts/AuthContext'
 const navItems = [
   {
     title: 'Dashboard',
@@ -22,14 +22,16 @@ const navItems = [
     href: '/dashboard/profile',
     icon: User,
   },
+
 ]
 
 export function DashboardNav() {
   const pathname = usePathname()
-  
+  const { logout, user } = useAuth()
 
   const handleSignOut = async () => {
     // Implement sign out logic here
+    await logout()
   }
 
   return (
@@ -45,7 +47,7 @@ export function DashboardNav() {
           </span>
         </Link>
         <h2 className="mb-4 px-2 text-lg font-semibold text-white">
-          Welcome,
+          Welcome, {user?.email?.split('@')[0]}
         </h2>
         <nav className="space-y-1">
           {navItems.map((item) => (

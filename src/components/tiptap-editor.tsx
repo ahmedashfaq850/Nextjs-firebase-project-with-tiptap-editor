@@ -24,10 +24,11 @@ import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { Slider } from '@/components/ui/slider'
-import { Bold, Italic, UnderlineIcon, Strikethrough, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, AlignJustify, Indent, Outdent, Search, Scissors, Copy, Clipboard, Undo, Redo, Type, LineChartIcon as LineHeight, Highlighter, LinkIcon, TableIcon, Code, Quote, Paintbrush, ImageIcon } from 'lucide-react'
+import { Bold, Italic, UnderlineIcon, Strikethrough, List, ListOrdered, AlignLeft, AlignCenter, AlignRight, AlignJustify, Indent, Outdent, Search, Scissors, Copy, Clipboard, Undo, Redo, Type, Highlighter, LinkIcon, TableIcon, Code, Quote, Paintbrush, ImageIcon, Upload, Wand2 } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import { Fragment, Slice } from '@tiptap/pm/model'
 import ToolbarButton from './ToolbarButton'
+import { Textarea } from '@/components/ui/textarea'
 
 interface TipTapEditorProps {
   content?: string
@@ -42,9 +43,10 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
   const [findText, setFindText] = useState('')
   const [replaceText, setReplaceText] = useState('')
   const [fontSize, setFontSize] = useState(16)
-  const [lineSpacing, setLineSpacing] = useState(1.5)
   const [wordCount, setWordCount] = useState(0)
   const [characterCount, setCharacterCount] = useState(0)
+  const [aiPrompt, setAiPrompt] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
 
   const editor = useEditor({
     extensions: [
@@ -104,6 +106,20 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
     }
   }, [editor, imageUrl])
 
+  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file && editor) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result
+        if (typeof result === 'string') {
+          editor.chain().focus().setImage({ src: result }).run()
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }, [editor])
+
   const setLink = useCallback(() => {
     if (linkUrl && editor) {
       editor.chain().focus().setLink({ href: linkUrl }).run()
@@ -126,6 +142,39 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
   }, [editor, findText, replaceText])
 
 
+  
+
+  const generateAIContent = useCallback(async () => {
+    if (!aiPrompt || !editor) return
+
+    setIsGenerating(true)
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: aiPrompt }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate content')
+      }
+
+      // Insert the generated content as plain text
+      editor.chain().focus().insertContent(data.content).run()
+
+      // Clear the AI prompt input
+      setAiPrompt('')
+    } catch (error) {
+      console.error('Error generating content:', error)
+      // You can add a toast notification here to show the error to the user
+    } finally {
+      setIsGenerating(false)
+    }
+  }, [aiPrompt, editor])
 
   if (!editor) {
     return null
@@ -171,7 +220,7 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           isActive={editor.isActive('bulletList')}
-          title="Bullet List"
+          title="Bulleted List"
         >
           <List className="h-4 w-4" />
         </ToolbarButton>
@@ -237,11 +286,11 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
               <Search className="h-4 w-4" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80">
+          <PopoverContent className="w-80 border border-zinc-700/50 bg-zinc-800 text-zinc-100">
             <div className="grid gap-4">
               <div className="space-y-2">
-                <h4 className="font-medium leading-none">Find and Replace</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium leading-none text-zinc-100">Find and Replace</h4>
+                <p className="text-sm text-zinc-400">
                   Search for text and replace it.
                 </p>
               </div>
@@ -252,7 +301,7 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
                     id="find"
                     value={findText}
                     onChange={(e) => setFindText(e.target.value)}
-                    className="col-span-2 h-8"
+                    className="col-span-2 h-8 bg-zinc-900 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500/50"
                   />
                 </div>
                 <div className="grid grid-cols-3 items-center gap-4">
@@ -261,11 +310,11 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
                     id="replace"
                     value={replaceText}
                     onChange={(e) => setReplaceText(e.target.value)}
-                    className="col-span-2 h-8"
+                    className="col-span-2 h-8 bg-zinc-900 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500/50"
                   />
                 </div>
               </div>
-              <Button onClick={findAndReplace}>Replace All</Button>
+              <Button onClick={findAndReplace} className="bg-violet-500 text-white hover:bg-violet-600">Replace All</Button>
             </div>
           </PopoverContent>
         </Popover>
@@ -328,11 +377,11 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
               <Type className="h-4 w-4" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80">
+          <PopoverContent className="w-80 border border-zinc-700/50 bg-zinc-800 text-zinc-100">
             <div className="grid gap-4">
               <div className="space-y-2">
-                <h4 className="font-medium leading-none">Font Size</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium leading-none text-zinc-100">Font Size</h4>
+                <p className="text-sm text-zinc-400">
                   Set the font size for the selected text.
                 </p>
               </div>
@@ -348,31 +397,6 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
           </PopoverContent>
         </Popover>
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9 border border-transparent p-2 text-zinc-300 hover:bg-violet-500/20 hover:text-violet-200">
-              <LineHeight className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80">
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <h4 className="font-medium leading-none">Line Spacing</h4>
-                <p className="text-sm text-muted-foreground">
-                  Set the line spacing for the selected text.
-                </p>
-              </div>
-              <Slider
-                min={1}
-                max={3}
-                step={0.1}
-                value={[lineSpacing]}
-                onValueChange={(value) => setLineSpacing(value[0])}
-              />
-              <div>{lineSpacing}</div>
-            </div>
-          </PopoverContent>
-        </Popover>
 
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleHighlight().run()}
@@ -385,14 +409,14 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" size="icon" className="h-9 w-9 border border-transparent p-2 text-zinc-300 hover:bg-violet-500/20 hover:text-violet-200">
-              <LinkIcon className="h-4 w-4" />
-            </Button>
+            <LinkIcon className="h-4 w-4" />
+          </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80">
+          <PopoverContent className="w-80 border border-zinc-700/50 bg-zinc-800 text-zinc-100">
             <div className="grid gap-4">
               <div className="space-y-2">
-                <h4 className="font-medium leading-none">Insert Link</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium leading-none text-zinc-100">Insert Link</h4>
+                <p className="text-sm text-zinc-400">
                   Add a hyperlink to the selected text.
                 </p>
               </div>
@@ -402,9 +426,10 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
                   placeholder="https://example.com"
+                  className="bg-zinc-900 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500 focus:border-violet-500/50"
                 />
               </div>
-              <Button onClick={setLink}>Insert Link</Button>
+              <Button onClick={setLink} className="bg-violet-500 text-white hover:bg-violet-600">Insert Link</Button>
             </div>
           </PopoverContent>
         </Popover>
@@ -433,12 +458,21 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
         </ToolbarButton>
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().setColor('#958DF1').run()}
+          onClick={() => {
+            const currentColor = editor.getAttributes('textStyle').color
+            if (currentColor === '#958DF1') {
+              editor.chain().focus().unsetColor().run()
+            } else {
+              editor.chain().focus().setColor('#958DF1').run()
+            }
+          }}
           isActive={editor.isActive('textStyle', { color: '#958DF1' })}
-          title="Text Style"
+          title="Text Color"
         >
           <Paintbrush className="h-4 w-4" />
         </ToolbarButton>
+
+        <Separator orientation="vertical" className="mx-1 h-6 bg-zinc-700/50" />
 
         <div className="ml-auto flex items-center gap-2">
           <Input
@@ -456,6 +490,16 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
           >
             <ImageIcon className="h-4 w-4" />
           </Button>
+          <Label htmlFor="image-upload" className="cursor-pointer">
+            <Input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageUpload}
+            />
+            <Upload className="h-4 w-4 text-zinc-300 hover:text-violet-200" />
+          </Label>
         </div>
       </div>
 
@@ -467,9 +511,44 @@ const TipTapEditor = ({ content = '<p>Start writing your blog post...</p>', onCh
         <div className="text-sm text-zinc-400">
           {wordCount} words | {characterCount} characters
         </div>
-        <div className="flex gap-2">
-         
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="flex items-center gap-2 bg-violet-500/10 text-violet-200 hover:bg-violet-500/20 hover:text-violet-100"
+            >
+              <Wand2 className="h-4 w-4 text-violet-400" />
+              AI Generate
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 border border-zinc-700/50 bg-zinc-800 text-zinc-100">
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <h4 className="font-medium leading-none text-zinc-100">AI Text Generation</h4>
+                <p className="text-sm text-zinc-400">
+                  Enter a prompt to generate concise AI content (max 150 words).
+                </p>
+              </div>
+              <div className="grid gap-2">
+                <Textarea
+                  id="ai-prompt"
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  placeholder="E.g., 'Write a brief introduction about artificial intelligence' or 'List 3 tips for productive writing'"
+                  className="h-24 resize-none bg-zinc-900 border-zinc-700/50 placeholder:text-zinc-500 focus:border-violet-500/50"
+                />
+              </div>
+              <Button 
+                onClick={generateAIContent} 
+                disabled={isGenerating}
+                className="bg-violet-500 text-white hover:bg-violet-600"
+              >
+                {isGenerating ? 'Generating...' : 'Generate Content'}
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <style jsx global>{`
